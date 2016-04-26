@@ -1,0 +1,7 @@
+auth_kwargs:
+  auth_url: your_auth_url
+  username: your_user_name
+  password: your_password
+  project_name: your_project_name
+  user_domain_name: your_user_domain_name
+  project_domain_name: your_project_domain_name
