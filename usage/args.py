@@ -43,6 +43,19 @@ parser.add_argument(
     default=False
 )
 
+# Include an option for filename
+parser.add_argument(
+    '--definition-filename',
+    default='/etc/usage/report.yaml',
+    help='Report definition location.'
+)
+
+parser.add_argument(
+    '--csv-filename',
+    default='/etc/usage/reports/billing.csv',
+    help='Report output filename. Report time intervals will be added.'
+)
+
 # Set the log level.
 parser.add_argument(
     '--log-level', help="Log level", choices=['debug', 'info'],

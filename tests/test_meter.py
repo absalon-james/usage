@@ -152,7 +152,8 @@ class TestMeter(unittest.TestCase):
         four_hours_ago = now - datetime.timedelta(hours=4)
 
         samples = []
-        self.assertEquals(m.gauge(samples, three_hours_ago, now), 0)
+        results = [t for t in m.gauge(samples, three_hours_ago, now)]
+        self.assertEquals(len(results), 0)
 
         samples = [
             FakeSample(
@@ -181,7 +182,11 @@ class TestMeter(unittest.TestCase):
             )
         ]
 
-        self.assertEquals(m.gauge(samples, three_hours_ago, now), 3 + 6)
+        expected = [3, 6]
+        generator = m.gauge(samples, three_hours_ago, now)
+        for i, tup in enumerate(generator):
+            sample, reading = tup
+            self.assertEquals(expected[i], reading)
 
     def test_cumulative(self):
         """Test the cumulative method..."""
@@ -190,7 +195,8 @@ class TestMeter(unittest.TestCase):
         two_hours_ago = now - datetime.timedelta(hours=2)
 
         # Test no samples
-        self.assertEquals(m.cumulative([], two_hours_ago, now), 0)
+        results = [t for t in m.cumulative([], two_hours_ago, now)]
+        self.assertEquals(len(results), 0)
 
         # Test with samples
         samples = [
@@ -215,9 +221,12 @@ class TestMeter(unittest.TestCase):
                 timestamp=now
             )
         ]
-        self.assertEquals(
-            m.cumulative(samples, two_hours_ago, now), (2 - 0) + (20 - 10)
-        )
+
+        expected = [2, 10]
+        generator = m.cumulative(samples, two_hours_ago, now)
+        for i, tup in enumerate(generator):
+            sample, reading = tup
+            self.assertEquals(expected[i], reading)
 
     def test_count(self):
         """Tests the count method."""
@@ -294,7 +303,11 @@ class TestMeter(unittest.TestCase):
             )
         ]
         m.client.samples.list.return_value = gauge_samples
-        self.assertEquals(m.read(start=three_hours_ago, stop=now), 3 + 6)
+        expected = [3, 6]
+        generator = m.read(start=three_hours_ago, stop=now)
+        for i, tup in enumerate(generator):
+            sample, reading = tup
+            self.assertEquals(expected[i], reading)
 
         cumulative_samples = [
             FakeSample(
@@ -323,6 +336,8 @@ class TestMeter(unittest.TestCase):
             )
         ]
         m.client.samples.list.return_value = cumulative_samples
-        self.assertEquals(
-            m.read(start=three_hours_ago, stop=now), (2 - 0) + (20 - 10)
-        )
+        expected = [2, 10]
+        generator = m.read(start=two_hours_ago, stop=now)
+        for i, tup in enumerate(generator):
+            sample, reading = tup
+            self.assertEquals(expected[i], reading)

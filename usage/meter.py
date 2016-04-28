@@ -95,7 +95,6 @@ class Meter:
         :param stop: Stop date and time
         :type stop: datetime
         """
-        reading = 0.0
         for resource_id, group in itertools.groupby(samples,
                                                     lambda x: x.resource_id):
             # Convert generator to list
@@ -119,6 +118,7 @@ class Meter:
                 )
 
             group_reading = group_reading / 2
+            group_reading = seconds_to_hours(group_reading)
 
             for sample in group:
                 logger.debug("\t{} - {} - {} - {}".format(
@@ -127,11 +127,7 @@ class Meter:
                     sample.timestamp,
                     sample.counter_volume
                 ))
-            reading += group_reading
-
-        # Reading is in unit seconds. Convert to unit hours.
-        reading = seconds_to_hours(reading)
-        return reading
+            yield (group[-1], group_reading)
 
     def cumulative(self, samples, start, stop):
         """Computes cumulative differences.
@@ -145,7 +141,6 @@ class Meter:
         :return: Cumulative difference
         :rtype: Float
         """
-        reading = 0.0
         for resource_id, group in itertools.groupby(samples,
                                                     lambda x: x.resource_id):
             # Convert generator to list
@@ -159,8 +154,7 @@ class Meter:
                     sample.timestamp,
                     sample.counter_volume
                 ))
-            reading += difference
-        return reading
+            yield (group[-1], difference)
 
     def count(self, q):
         """Get a count of samples matching q.
@@ -212,7 +206,7 @@ class Meter:
         count = self.count(q)
         logger.debug("{} samples according to statistics.".format(count))
         if not count:
-            return 0.0
+            return []
 
         # Get samples
         samples = self.client.samples.list(

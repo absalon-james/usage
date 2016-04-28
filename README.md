@@ -37,28 +37,3 @@ cp usage/sample-usage.yaml /etc/usage/usage.yaml
 cd usage
 python setup.py develop
 ```
-
-### How to use:
-```python
-import datetime
-from usage import config
-from usage.clients import ClientManager
-from usage.meter import Meter
-
-conf = config.load('/etc/usage/usage.yaml')
-manager = ClientManager(**conf.get('auth_kwargs',{}))
-ceilometer = manager.get_ceilometer()
-
-# Get vcpu hours for the last 5 hours
-
-# Setup time frame
-now = datetime.datetime.utcnow()
-five_hours_ago = now - datetime.timedelta(hours=5)
-
-# 'vcpus' is the name of a meter in ceilometer
-m = Meter(ceilometer, 'vcpus')
-reading = m.read(start=five_hours_ago, stop=now)
-print "Vcpu hours for the last 5 hours: {}".format(reading)
-
-# For a more detailed example look at main.py
-```
