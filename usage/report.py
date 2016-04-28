@@ -73,7 +73,7 @@ class Report:
     def _load_definition(self):
         """Load a report definition."""
         with open(self._definition_filename, 'r') as f:
-            self._definition = yaml.load(f)
+            self._definition = yaml.safe_load(f)
 
     @property
     def csv_filename(self):

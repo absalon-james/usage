@@ -18,4 +18,4 @@ def load(filename):
     :rtype: Dict
     """
     with open(filename, 'r') as f:
-        return yaml.load(f)
+        return yaml.safe_load(f)
