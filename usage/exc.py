@@ -15,8 +15,15 @@ class UnknownCounterTypeError(Exception):
         super(UnknownCounterTypeError, self).__init__(msg)
 
 
-class UnknownLineItemFunction(Exception):
-    """Error for unknown line item functions."""
-    def __init__(self, func_name):
-        msg = 'Encountered unknown line item function {}'.format(func_name)
-        super(UnknownLineItemFunction, self).__init__(msg)
+class UnknownConversionError(Exception):
+    """Error for unknown conversion."""
+    def __init__(self, conversion_name):
+        msg = 'Unknown conversion {}.'.format(conversion_name)
+        super(UnknownConversionError, self).__init__(msg)
+
+
+class UnknownFieldFunctionError(Exception):
+    """Error for unknown field functions."""
+    def __init__(self, function_name):
+        msg = 'Unknown field function {}.'.format(function_name)
+        super(UnknownFieldFunctionError, self).__init__(msg)

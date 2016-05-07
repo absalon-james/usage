@@ -1,12 +1,11 @@
-import copy
+import datetime
 import itertools
 import query
 import utils
 
-from conversions import seconds_to_hours
 from exc import InvalidTimeRangeError
-from exc import UnknownCounterTypeError
 from log import logging
+from reading import Reading
 
 logger = logging.getLogger('usage.meter')
 
@@ -43,118 +42,27 @@ class Meter:
         self.client = client
         self.name = name
 
-    def assume_start(self, group, start):
-        """Create an assumed first datapoint.
+        # Extra time is 4 hours. 4 * 60 * 60 = 14400
+        self._extra_time = datetime.timedelta(seconds=14400)
 
-        Timestamp will be start if created_at < start
-        Timestamp will be created_at if created_at > start
+    def last_non_deleted_sample(self, group):
+        """Get last sample that is not in deleted or deleting.
 
-        :param group: List of samples in a group
+        Starts at the end of the group and looks backward for the first sample
+        that is not in a deleted or deleting status.
+
+        If a sample cannot be found, just return the last sample.
+
+        :param group: List of samples that are already sorted by timestamp.
         :type group: List
-        :param start: Start datetime
-        :type start: datetime
+        :returns: Last non deleted status sample.
+        :rtype: sample
         """
-        fake = copy.copy(group[0])
-        created_at = fake.resource_metadata.get('created_at')
-        if created_at:
-            created_at = utils.parse_datetime(created_at)
-            created_at = utils.normalize_time(created_at)
-            fake.timestamp = max(start, created_at)
-            group.insert(0, fake)
-
-    def assume_stop(self, group, stop):
-        """Create an assumed last datapoint.
-
-        Timestamp will be stop if deleted_at > stop
-        Timestamp will be deleted at id deleted_at < stop
-
-        :param group:  List of samples in a group
-        :type group: List
-        :param stop: Stop datetime
-        :type stop: datetime
-        """
-        fake = copy.copy(group[-1])
-        deleted_at = fake.resource_metadata.get('deleted_at')
-        if deleted_at and deleted_at.lower() != 'none':
-            deleted_at = utils.parse_datetime(deleted_at)
-            deleted_at = utils.normalize_time(deleted_at)
-        else:
-            deleted_at = stop
-        fake.timestamp = min(stop, deleted_at)
-        group.append(fake)
-
-    def gauge(self, samples, start, stop):
-        """Compute guage units of time.
-
-        Sort by resource_id
-
-        :param samples: List of samples
-        :type samples: List
-        :param start: Start date and time
-        :type start: datetime
-        :param stop: Stop date and time
-        :type stop: datetime
-        """
-        for resource_id, group in itertools.groupby(samples,
-                                                    lambda x: x.resource_id):
-            # Convert generator to list
-            group = list(group)
-
-            # Assume first and last data points
-            self.assume_start(group, start)
-            self.assume_stop(group, stop)
-
-            group_reading = 0.0
-            for i in xrange(1, len(group)):
-                group_reading += (
-                    (
-                        group[i].timestamp -
-                        group[i - 1].timestamp
-                    ).total_seconds() *
-                    (
-                        group[i].counter_volume +
-                        group[i - 1].counter_volume
-                    )
-                )
-
-            group_reading = group_reading / 2
-            group_reading = seconds_to_hours(group_reading)
-
-            for sample in group:
-                logger.debug("\t{} - {} - {} - {}".format(
-                    sample.resource_id,
-                    sample.counter_name,
-                    sample.timestamp,
-                    sample.counter_volume
-                ))
-            yield (group[-1], group_reading)
-
-    def cumulative(self, samples, start, stop):
-        """Computes cumulative differences.
-
-        :param samples: List of samples
-        :type samples: List
-        :param start: Start time
-        :type start: datetime
-        :param stop: Stop time
-        :type stop: datetime
-        :return: Cumulative difference
-        :rtype: Float
-        """
-        for resource_id, group in itertools.groupby(samples,
-                                                    lambda x: x.resource_id):
-            # Convert generator to list
-            group = list(group)
-            # Compute difference by using first and last datapoints
-            difference = group[-1].counter_volume - group[0].counter_volume
-            for sample in group:
-                logger.debug("\t{} - {} - {} - {}".format(
-                    sample.resource_id,
-                    sample.counter_name,
-                    sample.timestamp,
-                    sample.counter_volume
-                ))
-            yield (group[-1], difference)
+        deleted_status = set(['deleted', 'deleting'])
+        for i in xrange(len(group) - 1, -1, -1):
+            if group[i].resource_metadata.get('status') not in deleted_status:
+                return group[i]
+        return group[-1]
 
     def count(self, q):
         """Get a count of samples matching q.
@@ -175,6 +83,24 @@ class Meter:
             return 0
         return stats[0].count
 
+    def _reading_generator(self, samples, start, stop):
+        """Yields one reading at a time.
+
+        Samples are grouped by resource id(already sorted by resource id)
+        and then used to create a reading object.
+
+        :param samples: List of samples sorted by resource_id and timestamp.
+        :type samples: List
+        :param start: Reading start time
+        :type start: Datetime
+        :param stop: Reading stop time
+        :type stop: Datetime
+        :yields: Reading objects
+        """
+        # Yield a reading for each resource/meter pair
+        for _, g in itertools.groupby(samples, lambda x: x.resource_id):
+            yield Reading(list(g), start, stop)
+
     def read(self, start=None, stop=None, q=None):
         """Read a meter.
 
@@ -188,19 +114,24 @@ class Meter:
         :rtype: Float
         """
         # Default times to month to date
-        default_start, default_end = utils.mtd_range()
-        if start is None:
+        default_start, default_stop = utils.mtd_range()
+        if not start:
             start = default_start
-        if stop is None:
-            stop = default_end
+        if not stop:
+            stop = default_stop
+        logger.info("Start: {}".format(start))
+        logger.info("Stop:  {}".format(stop))
         if start > stop:
             raise InvalidTimeRangeError(start, stop)
 
-        # Add times to query
-        if q is None:
-            q = []
-        q.append(query.query('timestamp', 'gt', start, 'datetime'))
-        q.append(query.query('timestamp', 'le', stop, 'datetime'))
+        # Add times to query. times are +- the extra time.
+        q = q or []
+        q.append(query.query(
+            'timestamp', 'gt', start - self._extra_time, 'datetime'
+        ))
+        q.append(query.query(
+            'timestamp', 'le', stop + self._extra_time, 'datetime'
+        ))
 
         # Count of samples:
         count = self.count(q)
@@ -225,9 +156,5 @@ class Meter:
         # Sort by resource id and then timestamps in ascending order
         samples.sort(cmp=_cmp_sample)
 
-        # Determine type of meter
-        # For now just use first sample and assume its the same for all
-        meter_type = samples[0].counter_type
-        if not hasattr(self, meter_type):
-            raise UnknownCounterTypeError(meter_type)
-        return getattr(self, meter_type)(samples, start, stop)
+        # Return generator
+        return self._reading_generator(samples, start, stop)
