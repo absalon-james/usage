@@ -115,6 +115,32 @@ def billing_period_start_date(d, i, r):
     return r.start.isoformat()
 
 
+def display_name(d, i, r):
+    """Get the resource display name.
+
+    :param d: Report definition.
+    :type d: Dict
+    :param i: Item definition.
+    :type i: Dict
+    :param r: Meter reading
+    :type r: usage.reading.Reading
+    """
+    return r.metadata.get('display_name')
+
+
+def instance_type(d, i, r):
+    """get instance type.
+
+    :param d: Report definition.
+    :type d: Dict
+    :param i: Item definition
+    :type i: Dict
+    :param r: Meter reading
+    :type r: usage.reading.Reading
+    """
+    return r.metadata.get('instance_type')
+
+
 def payer_account_id(d, i, r):
     """Get payer account id
 

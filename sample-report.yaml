@@ -11,6 +11,12 @@ columns:
     func: metadata:color
   - name: Environment
     func: metadata:environment
+  - name: Display Name
+    func: display_name
+  - name: Availability Zone
+    func: availability_zone
+  - name: Instance Type/Flavor
+    func: instance_type
   - name: Time Interval
     func: timeinterval
   - name: Invoice Id
@@ -37,8 +43,6 @@ columns:
     func: usage_type
   - name: Operation
     func: operation
-  - name: Availability Zone
-    func: availability_zone
   - name: Usage Amount
     func: usage_amount
   - name: Currency Code

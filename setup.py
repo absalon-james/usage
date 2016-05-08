@@ -2,7 +2,7 @@ from setuptools import setup
 from usage.meta import version
 from usage.meta import description
 
-entry_points ="""
+entry_points = """
     [console_scripts]
     usage-report=usage.console:console_report
     [usage.conversions]
@@ -15,6 +15,8 @@ entry_points ="""
     billing_period_end_date=usage.fields.reading:billing_period_end_date
     currency_code=usage.fields.item:currency_code
     description=usage.fields.item:description
+    display_name=usage.fields.reading:display_name
+    instance_type=usage.fields.reading:instance_type
     invoice_id=usage.fields.report:invoice_id
     item_rate=usage.fields.item:item_rate
     line_item_type=usage.fields.item:line_item_type

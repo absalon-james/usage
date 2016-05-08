@@ -16,6 +16,8 @@ from usage.fields.item import usage_type
 from usage.fields.reading import availability_zone
 from usage.fields.reading import billing_period_end_date
 from usage.fields.reading import billing_period_start_date
+from usage.fields.reading import display_name
+from usage.fields.reading import instance_type
 from usage.fields.reading import metadata_field
 from usage.fields.reading import payer_account_id
 from usage.fields.reading import resource_id
@@ -136,6 +138,24 @@ class TestBillingPeriodEndDate(unittest.TestCase):
             billing_period_end_date(None, None, r),
             stop.isoformat()
         )
+
+
+class TestDisplayName(unittest.TestCase):
+    """Tests the display name field function."""
+    def test_display_name(self):
+        r = FakeReading()
+        self.assertTrue(display_name(None, None, r) is None)
+        r = FakeReading(metadata={'display_name': 'display_name'})
+        self.assertEquals(display_name(None, None, r), 'display_name')
+
+
+class TestInstanceType(unittest.TestCase):
+    """Tests the instance type field function."""
+    def test_instance_type(self):
+        r = FakeReading()
+        self.assertTrue(instance_type(None, None, r) is None)
+        r = FakeReading(metadata={'instance_type': 'instance_type'})
+        self.assertEquals(instance_type(None, None, r), 'instance_type')
 
 
 class TestUsageAccountId(unittest.TestCase):
