@@ -5,6 +5,8 @@ billing_entity: OpenStack
 columns:
   - name: Resource Id
     func: resource_id
+  - name: Meter Name
+    func: meter_name
   - name: Appid
     func: metadata:appid
   - name: Color
@@ -45,10 +47,12 @@ columns:
     func: operation
   - name: Usage Amount
     func: usage_amount
-  - name: Currency Code
-    func: currency_code
   - name: Item Rate
     func: item_rate
+  - name: Cost
+    func: cost
+  - name: Currency Code
+    func: currency_code
   - name: Description
     func: description
   - name: Product Name
@@ -67,6 +71,18 @@ items:
     item_rate: 0.2
     description: cpu Hours
     product_name: Compute
+
+  - meter_name: memory
+    billing_entity: OpenStack
+    line_item_type: Usage
+    product_code: Compute
+    usage_type: Memory GB Hours
+    operation: Runinstances
+    currency_code: USD
+    item_rate: 0.5
+    description: Memory GB Hours
+    product_name: Compute
+    conversion: megabytes_to_gigabytes
 
   - meter_name: image.size
     billing_entity: OpenStack

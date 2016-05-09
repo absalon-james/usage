@@ -4,6 +4,7 @@ class FakeSample:
                  message_id=None,
                  resource_id=None,
                  project_id=None,
+                 meter=None,
                  timestamp=None,
                  counter_volume=None,
                  resource_metadata=None,
@@ -31,6 +32,7 @@ class FakeSample:
         self.message_id = message_id or 'message_id'
         self.resource_id = resource_id or 'resource_id'
         self.project_id = project_id or 'project_id'
+        self.meter = meter or 'meter'
         self.timestamp = timestamp or 0
         self.counter_volume = counter_volume or 0
         self.resource_metadata = resource_metadata or {}

@@ -8,11 +8,13 @@ entry_points = """
     [usage.conversions]
     seconds_to_hours=usage.conversions.time_units:seconds_to_hours
     bytes_to_gigabytes=usage.conversions.disk_units:bytes_to_gigabytes
+    megabytes_to_gigabytes=usage.conversions.disk_units:megabytes_to_gigabytes
     [usage.fields]
     availability_zone=usage.fields.reading:availability_zone
     billing_entity=usage.fields.item:billing_entity
     billing_period_start_date=usage.fields.reading:billing_period_start_date
     billing_period_end_date=usage.fields.reading:billing_period_end_date
+    cost=usage.fields.reading:cost
     currency_code=usage.fields.item:currency_code
     description=usage.fields.item:description
     display_name=usage.fields.reading:display_name
@@ -20,6 +22,7 @@ entry_points = """
     invoice_id=usage.fields.report:invoice_id
     item_rate=usage.fields.item:item_rate
     line_item_type=usage.fields.item:line_item_type
+    meter_name=usage.fields.item:meter_name
     operation=usage.fields.item:operation
     payer_account_id=usage.fields.reading:payer_account_id
     product_code=usage.fields.item:product_code
@@ -39,7 +42,9 @@ setup(
     author="james absalon",
     author_email="james.absalon@rackspace.com",
     packages=[
-        'usage'
+        'usage',
+        'usage.conversions',
+        'usage.fields'
     ],
     entry_points=entry_points,
     package_data={'usage': ['usage/*']},

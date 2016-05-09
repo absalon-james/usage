@@ -121,6 +121,7 @@ class Meter:
             stop = default_stop
         logger.info("Start: {}".format(start))
         logger.info("Stop:  {}".format(stop))
+        logger.info("Meter name: {}".format(self.name))
         if start > stop:
             raise InvalidTimeRangeError(start, stop)
 

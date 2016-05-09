@@ -144,6 +144,17 @@ class Reading:
         return self._during_samples
 
     @property
+    def meter_name(self):
+        """Get the name of the meter.
+
+        :returns: Name of the meter
+        :rtype: String
+        """
+        if not self._during_samples:
+            return None
+        return self._during_samples[-1].meter
+
+    @property
     def meter_type(self):
         """Get the type of meter.
 

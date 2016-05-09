@@ -3,6 +3,7 @@ import unittest
 
 from usage.conversions import convert
 from usage.conversions.disk_units import bytes_to_gigabytes
+from usage.conversions.disk_units import megabytes_to_gigabytes
 from usage.conversions.time_units import seconds_to_hours
 from usage.exc import UnknownConversionError
 
@@ -23,6 +24,19 @@ class TestBytesToGigabytes(unittest.TestCase):
     def test_zero(self):
         """Test a zero input."""
         self.assertEquals(bytes_to_gigabytes(0), 0)
+
+
+class TestMegabytesToGigabytes(unittest.TestCase):
+    """Test megabytes_to_gigabytes function."""
+
+    def test_nonzero(self):
+        """Tests a nonzero input."""
+        mb = 1024.0
+        self.assertEquals(megabytes_to_gigabytes(mb), 1.0)
+
+    def test_zero(self):
+        """Tests a zero input."""
+        self.assertEquals(megabytes_to_gigabytes(0), 0)
 
 
 class TestSecondsToHours(unittest.TestCase):

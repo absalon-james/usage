@@ -2,12 +2,17 @@ import datetime
 import mock
 import unittest
 
-
 from fakes import FakeSample
-
 from usage.exc import InvalidTimeRangeError
 from usage.meter import _cmp_sample
 from usage.meter import Meter
+
+now = datetime.datetime.utcnow()
+one_hour_ago = now - datetime.timedelta(hours=1)
+two_hours_ago = now - datetime.timedelta(hours=2)
+three_hours_ago = now - datetime.timedelta(hours=3)
+four_hours_ago = now - datetime.timedelta(hours=4)
+five_hours_ago = now - datetime.timedelta(hours=5)
 
 
 class TestCmpSample(unittest.TestCase):
@@ -62,10 +67,6 @@ class TestMeter(unittest.TestCase):
     def test_read(self, mock_reading):
         """Tests the read method."""
         # Test start > stop
-        now = datetime.datetime.utcnow()
-        one_hour_ago = now - datetime.timedelta(hours=1)
-        two_hours_ago = now - datetime.timedelta(hours=2)
-        four_hours_ago = now - datetime.timedelta(hours=4)
         m = Meter('client', 'meter_name')
         m.client = mock.Mock()
 

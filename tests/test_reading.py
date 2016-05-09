@@ -6,6 +6,13 @@ from fakes import FakeSample
 from usage.exc import UnknownCounterTypeError
 from usage.reading import Reading
 
+now = datetime.datetime.utcnow()
+one_hour_ago = now - datetime.timedelta(hours=1)
+two_hours_ago = now - datetime.timedelta(hours=2)
+three_hours_ago = now - datetime.timedelta(hours=3)
+four_hours_ago = now - datetime.timedelta(hours=4)
+five_hours_ago = now - datetime.timedelta(hours=5)
+
 
 class TestReading(unittest.TestCase):
     """Tests the reading class."""
@@ -15,13 +22,6 @@ class TestReading(unittest.TestCase):
         self.assertEquals(r.stop, 'stop')
 
     def test_split_samples(self):
-        now = datetime.datetime.utcnow()
-        one_hour_ago = now - datetime.timedelta(hours=1)
-        two_hours_ago = now - datetime.timedelta(hours=2)
-        three_hours_ago = now - datetime.timedelta(hours=3)
-        four_hours_ago = now - datetime.timedelta(hours=4)
-        five_hours_ago = now - datetime.timedelta(hours=5)
-
         # Test Samples with before, during, and after
         samples = [
             FakeSample(timestamp=five_hours_ago),
@@ -77,12 +77,6 @@ class TestReading(unittest.TestCase):
         self.assertFalse(r.resource_existed_after())
 
     def test_usage_start(self):
-        now = datetime.datetime.utcnow()
-        two_hours_ago = now - datetime.timedelta(hours=2)
-        three_hours_ago = now - datetime.timedelta(hours=3)
-        four_hours_ago = now - datetime.timedelta(hours=4)
-        five_hours_ago = now - datetime.timedelta(hours=5)
-
         # Test usage start no prior samples
         samples = [FakeSample(timestamp=three_hours_ago)]
         r = Reading(samples, four_hours_ago, now)
@@ -101,12 +95,6 @@ class TestReading(unittest.TestCase):
         self.assertTrue(r.usage_start is None)
 
     def test_usage_stop(self):
-        now = datetime.datetime.utcnow()
-        one_hour_ago = now - datetime.timedelta(hours=1)
-        two_hours_ago = now - datetime.timedelta(hours=2)
-        three_hours_ago = now - datetime.timedelta(hours=3)
-        four_hours_ago = now - datetime.timedelta(hours=4)
-
         # Test usage stop with no post samples
         samples = [FakeSample(timestamp=three_hours_ago)]
         r = Reading(samples, four_hours_ago, two_hours_ago)
@@ -125,42 +113,30 @@ class TestReading(unittest.TestCase):
         self.assertTrue(r.usage_stop is None)
 
     def test_resource_id(self):
-        now = datetime.datetime.utcnow()
-        one_hour_ago = now - datetime.timedelta(hours=1)
-        two_hours_ago = now - datetime.timedelta(hours=2)
         samples = [FakeSample(timestamp=one_hour_ago)]
         r = Reading(samples, two_hours_ago, now)
         self.assertEquals(r.resource_id, 'resource_id')
 
+    def test_meter_name(self):
+        samples = [FakeSample(timestamp=one_hour_ago)]
+        r = Reading(samples, two_hours_ago, now)
+        self.assertEquals(r.meter_name, 'meter')
+
     def test_project_id(self):
-        now = datetime.datetime.utcnow()
-        one_hour_ago = now - datetime.timedelta(hours=1)
-        two_hours_ago = now - datetime.timedelta(hours=2)
         samples = [FakeSample(timestamp=one_hour_ago)]
         r = Reading(samples, two_hours_ago, now)
         self.assertEquals(r.project_id, 'project_id')
 
     def test_no_samples_reading(self):
-        now = datetime.datetime.utcnow()
-        then = now - datetime.timedelta(hours=1)
-        r = Reading([], then, now)
+        r = Reading([], one_hour_ago, now)
         self.assertTrue(r.value is None)
 
     def test_unknown_meter(self):
-        now = datetime.datetime.utcnow()
-        then = now - datetime.timedelta(hours=2)
-        samples = [FakeSample(counter_type='unknown', timestamp=then)]
+        samples = [FakeSample(counter_type='unknown', timestamp=two_hours_ago)]
         with self.assertRaises(UnknownCounterTypeError):
-            Reading(samples, then, now)
+            Reading(samples, two_hours_ago, now)
 
     def test_guage_reading(self):
-        now = datetime.datetime.utcnow()
-        one_hour_ago = now - datetime.timedelta(hours=1)
-        two_hours_ago = now - datetime.timedelta(hours=2)
-        three_hours_ago = now - datetime.timedelta(hours=3)
-        four_hours_ago = now - datetime.timedelta(hours=4)
-        five_hours_ago = now - datetime.timedelta(hours=5)
-
         # Test no post/pre samples
         samples = [
             FakeSample(
@@ -198,13 +174,6 @@ class TestReading(unittest.TestCase):
         self.assertEquals(r.value, 3.0)
 
     def test_cumulative_reading(self):
-        now = datetime.datetime.utcnow()
-        one_hour_ago = now - datetime.timedelta(hours=1)
-        two_hours_ago = now - datetime.timedelta(hours=2)
-        three_hours_ago = now - datetime.timedelta(hours=3)
-        four_hours_ago = now - datetime.timedelta(hours=4)
-        five_hours_ago = now - datetime.timedelta(hours=5)
-
         # Test with both pre and post samples
         samples = [
             FakeSample(
@@ -237,12 +206,6 @@ class TestReading(unittest.TestCase):
         self.assertEquals(r.value, 4 - 2)
 
     def test_metdata(self):
-        now = datetime.datetime.utcnow()
-        one_hour_ago = now - datetime.timedelta(hours=1)
-        two_hours_ago = now - datetime.timedelta(hours=2)
-        three_hours_ago = now - datetime.timedelta(hours=3)
-        five_hours_ago = now - datetime.timedelta(hours=5)
-
         # Test no samples:
         samples = []
         r = Reading(samples, five_hours_ago, now)
@@ -351,10 +314,6 @@ class TestReading(unittest.TestCase):
 
     @mock.patch('usage.reading.convert', return_value='converted')
     def test_convert(self, mock_convert):
-        now = datetime.datetime.utcnow()
-        two_hours_ago = now - datetime.timedelta(hours=2)
-        three_hours_ago = now - datetime.timedelta(hours=3)
-        four_hours_ago = now - datetime.timedelta(hours=4)
         samples = [
             FakeSample(timestamp=three_hours_ago, counter_volume=1),
             FakeSample(timestamp=two_hours_ago, counter_volume=1)

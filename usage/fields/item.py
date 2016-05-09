@@ -79,6 +79,21 @@ def line_item_type(d, i, r):
     return i.get('line_item_type', '')
 
 
+def meter_name(d, i, r):
+    """Get meter name from item.
+
+    :param d: Report definition
+    :type d: Dict
+    :param i: Item definition
+    :type i: Dict
+    :param r: Meter reading.
+    :type r: usage.reading.Reading
+    :return: Name of the meter
+    :rtype: String
+    """
+    return i.get('meter_name')
+
+
 def operation(d, i, r):
     """Get operation from item.
 

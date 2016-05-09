@@ -115,6 +115,25 @@ def billing_period_start_date(d, i, r):
     return r.start.isoformat()
 
 
+def cost(d, i, r):
+    """Get cost as a combination of the item rate and reading value.
+
+    The cost format comes from the report definition and will default to
+    "{:.2f}",format(value)
+
+    :param d: Report definition
+    :type: d: Dict
+    :param i: Item definition
+    :type i: Dict
+    :param r: Meter Reading.
+    :type r: usage.reading.Reading
+    """
+    template = d.get('cost_format', '{:.2f}')
+    value = float(r.value)
+    cost = value * i.get('item_rate', 0)
+    return template.format(cost)
+
+
 def display_name(d, i, r):
     """Get the resource display name.
 

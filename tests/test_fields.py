@@ -9,6 +9,7 @@ from usage.fields.item import currency_code
 from usage.fields.item import description
 from usage.fields.item import item_rate
 from usage.fields.item import line_item_type
+from usage.fields.item import meter_name
 from usage.fields.item import operation
 from usage.fields.item import product_code
 from usage.fields.item import product_name
@@ -16,6 +17,7 @@ from usage.fields.item import usage_type
 from usage.fields.reading import availability_zone
 from usage.fields.reading import billing_period_end_date
 from usage.fields.reading import billing_period_start_date
+from usage.fields.reading import cost
 from usage.fields.reading import display_name
 from usage.fields.reading import instance_type
 from usage.fields.reading import metadata_field
@@ -140,6 +142,19 @@ class TestBillingPeriodEndDate(unittest.TestCase):
         )
 
 
+class TestCost(unittest.TestCase):
+    """Tests the cost field function."""
+    def test_cost(self):
+        item = {'item_rate': 1.0}
+        r = FakeReading(value='1.2345')
+        # Test default {:.2f}
+        self.assertEquals(cost({}, item, r), '1.23')
+
+        # Test other
+        d = {'cost_format': '{:.1f}'}
+        self.assertEquals(cost(d, item, r), '1.2')
+
+
 class TestDisplayName(unittest.TestCase):
     """Tests the display name field function."""
     def test_display_name(self):
@@ -171,6 +186,15 @@ class TestLineItemType(unittest.TestCase):
         item = {'line_item_type': 'line_item_type'}
         self.assertTrue(line_item_type(None, {}, None) is '')
         self.assertEquals(line_item_type(None, item, None), 'line_item_type')
+
+
+class TestMeterName(unittest.TestCase):
+    """Tests the meter name field function."""
+    def test_meter_name(self):
+        item = {}
+        self.assertTrue(meter_name(None, item, None) is None)
+        item['meter_name'] = 'test'
+        self.assertEquals(meter_name(None, item, None), 'test')
 
 
 class TestProductCode(unittest.TestCase):
