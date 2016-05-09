@@ -20,7 +20,11 @@ auth_kwargs:
 ```
 
 ### Requirements
-- python-ceilometerclient
+
+- apt-get install python-dev
+- pip install python-ceilometerclient
+- pip install positional
+- pip install babel
 
 ### Installation
 ```shell
