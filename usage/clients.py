@@ -4,9 +4,6 @@ Provides a cross project client manager.
 from keystoneauth1 import loading
 from keystoneauth1 import session
 from ceilometerclient import client as ceilometerclient
-from cinderclient import client as cinderclient
-from novaclient import client as novaclient
-from glanceclient import Client as glanceclient
 
 
 class ClientManager(object):
@@ -39,37 +36,6 @@ class ClientManager(object):
             auth = loader.load_from_options(**self.auth_kwargs)
             self.session = session.Session(auth=auth)
         return self.session
-
-    def get_nova(self, version='2.1'):
-        """Get a nova client instance.
-
-        :param version: String api version
-        :returns: novaclient.client.Client
-        """
-        if self.nova is None:
-            self.nova = novaclient.Client(version, session=self.get_session())
-        return self.nova
-
-    def get_glance(self, version='2'):
-        """Get a glance client instance.
-
-        :param version: String api version
-        :return: glanceclient.Client
-        """
-        if self.glance is None:
-            self.glance = glanceclient(version, session=self.get_session())
-        return self.glance
-
-    def get_cinder(self, version='2'):
-        """Get a cinder client instance.
-
-        :param version: String api version
-        :return: cinderclient.client.Client
-        """
-        if self.cinder is None:
-            self.cinder = cinderclient.Client(version,
-                                              session=self.get_session())
-        return self.cinder
 
     def get_ceilometer(self, version='2'):
         """Get a ceilometer client instance.
