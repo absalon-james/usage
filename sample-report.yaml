@@ -7,11 +7,11 @@ columns:
     func: resource_id
   - name: Meter Name
     func: meter_name
-  - name: Appid
+  - name: user:appid
     func: metadata:appid
-  - name: Color
+  - name: user:color
     func: metadata:color
-  - name: Environment
+  - name: user:environment
     func: metadata:environment
   - name: Display Name
     func: display_name
