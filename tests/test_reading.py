@@ -205,6 +205,38 @@ class TestReading(unittest.TestCase):
         r = Reading(samples, four_hours_ago, two_hours_ago)
         self.assertEquals(r.value, 4 - 2)
 
+    def test_delta_reading(self):
+        # Test with both pre and post samples
+        samples = [
+            FakeSample(
+                counter_type='delta',
+                counter_volume=1,
+                timestamp=five_hours_ago
+            ),
+            FakeSample(
+                counter_type='delta',
+                counter_volume=2,
+                timestamp=four_hours_ago
+            ),
+            FakeSample(
+                counter_type='delta',
+                counter_volume=3,
+                timestamp=three_hours_ago
+            ),
+            FakeSample(
+                counter_type='delta',
+                counter_volume=4,
+                timestamp=two_hours_ago
+            ),
+            FakeSample(
+                counter_type='delta',
+                counter_volume=5,
+                timestamp=one_hour_ago
+            )
+        ]
+        r = Reading(samples, four_hours_ago, two_hours_ago)
+        self.assertEquals(r.value, 9)
+
     def test_metdata(self):
         # Test no samples:
         samples = []

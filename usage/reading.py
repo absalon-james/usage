@@ -6,7 +6,7 @@ from conversions import convert
 from conversions.time_units import seconds_to_hours
 
 
-ALLOWED_METER_TYPES = set(['gauge', 'cumulative'])
+ALLOWED_METER_TYPES = set(['gauge', 'cumulative', 'delta'])
 logger = logging.getLogger('usage.reading')
 
 
@@ -233,6 +233,16 @@ class Reading:
             self._during_samples[-1].counter_volume - \
             self._during_samples[0].counter_volume
 
+    def _delta(self):
+        """Compute delta reading.
+
+        Delta meters are just changes in value since last point.
+        Sum the the values.
+        """
+        self.value = 0
+        for sample in self._during_samples:
+            self.value += sample.counter_volume
+
     def _calculate(self):
         """Performs the aggregation according to meter type."""
         # Return quick if no samples
@@ -248,6 +258,8 @@ class Reading:
             self._gauge()
         elif meter_type == 'cumulative':
             self._cumulative()
+        elif meter_type == 'delta':
+            self._delta()
 
     def _set_metadata(self):
         """Pulls metadata from the sample list.
