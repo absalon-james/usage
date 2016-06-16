@@ -1,3 +1,47 @@
+class FakeArgs:
+    """Fake arguments object."""
+    def __init__(self,
+                 mtd=False,
+                 today=False,
+                 last_hour=False,
+                 start=None,
+                 stop=None,
+                 config_file='config_file',
+                 definition_filename='definition_filename',
+                 csv_filename='csv_filename',
+                 log_level='log_level'):
+        """Set up the fake argument object.
+
+        :param mtd: Month to date
+        :type mtd: Bool
+        :param today: Today
+        :type today: Bool
+        :param last_hour: Last hour
+        :type last_hour: Bool
+        :param start: Start
+        :type start: String
+        :param stop: Stop
+        :type stop: String
+        :param config_file: Config File
+        :type config_file: String
+        :param definition_filename: Definition filename
+        :type definition_filename: String
+        :param csv_filename: CSV Filename
+        :type csv_Filename: String
+        :param log_level: Log Level
+        :type log_level: String
+        """
+        self.mtd = mtd
+        self.today = today
+        self.last_hour = last_hour
+        self.start = start
+        self.stop = stop
+        self.config_file = config_file
+        self.definition_filename = definition_filename
+        self.csv_filename = csv_filename
+        self.log_level = log_level
+
+
 class FakeSample:
     """Fake sample class for testing."""
     def __init__(self,

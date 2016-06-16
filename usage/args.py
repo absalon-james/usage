@@ -5,7 +5,25 @@ Import parser from this module.
 """
 import argparse
 import meta
+import utils
 
+
+def check_datetime(date_str):
+    """Parse iso8601 datetime strings.
+
+    :param date_str: String from a datetime argument.
+    :type date_str: String
+    :returns: Normalized datetime object
+    :rtype: datetime.datetime
+    """
+    try:
+        dt = utils.parse_datetime(date_str)
+        dt = utils.normalize_time(dt)
+    except:
+        raise argparse.ArgumentTypeError(
+            "{} is an invalid iso8601 datetime string.".format(date_str)
+        )
+    return dt
 
 parser = argparse.ArgumentParser(description=meta.description)
 
@@ -41,6 +59,18 @@ parser.add_argument(
     '--last-hour', action='store_true',
     help='Usage for last hour',
     default=False
+)
+
+# The following are for arbitrary time inputs
+parser.add_argument(
+    '--start',
+    type=check_datetime,
+    help="ISO8601 Report Start Date and Time"
+)
+parser.add_argument(
+    '--stop',
+    type=check_datetime,
+    help="ISO8601 Report Stop Date and Time"
 )
 
 # Include an option for filename
