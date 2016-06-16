@@ -19,14 +19,10 @@ columns:
     func: availability_zone
   - name: Instance Type/Flavor
     func: instance_type
-  - name: Time Interval
-    func: timeinterval
   - name: Invoice Id
     func: invoice_id
   - name: Billing Entity
     func: billing_entity
-  - name: Payer Account Id
-    func: payer_account_id
   - name: Billing Period Start Date
     func: billing_period_start_date
   - name: Billing Period End Date
