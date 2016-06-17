@@ -67,10 +67,26 @@ class TestMetadataField(unittest.TestCase):
         r = FakeReading(metadata=metadata)
         self.assertEquals(metadata_field(self.key, r), 'nova')
 
+        # Test insensitive metadata
+        metadata = {'metadata.TeSt': 'nova'}
+        r = FakeReading(metadata=metadata)
+        self.assertEquals(metadata_field(self.key, r), 'nova')
+
+        # Test insensitive key
+        self.assertEquals(metadata_field('metadata:TEst', r), 'nova')
+
     def test_glance_metdata(self):
         metadata = {'properties.test': 'glance'}
         r = FakeReading(metadata=metadata)
         self.assertEquals(metadata_field(self.key, r), 'glance')
+
+        # Test insensitive metadata
+        metadata = {'properties.TeST': 'glance'}
+        r = FakeReading(metadata=metadata)
+        self.assertEquals(metadata_field(self.key, r), 'glance')
+
+        # Test insensitive key
+        self.assertEquals(metadata_field('metadata:tESt', r), 'glance')
 
     def test_cinder_metadata(self):
         metadata = {
@@ -78,6 +94,16 @@ class TestMetadataField(unittest.TestCase):
         }
         r = FakeReading(metadata=metadata)
         self.assertEquals(metadata_field(self.key, r), 'cinder')
+
+        # Test insensitive metadata
+        metadata = {
+            'metadata': unicode("[{'key': 'TeSt', 'value': 'cinder'}]")
+        }
+        r = FakeReading(metadata=metadata)
+        self.assertEquals(metadata_field(self.key, r), 'cinder')
+
+        # Test insensitive key
+        self.assertEquals(metadata_field('metadata:tEsT', r), 'cinder')
 
 
 class TestResourceId(unittest.TestCase):

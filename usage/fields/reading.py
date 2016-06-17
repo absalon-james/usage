@@ -7,6 +7,33 @@ _ALLOWED_RESOURCE_ATTRS = ['resource_id', 'project_id', 'metadata']
 logger = logging.getLogger('usage.fields')
 
 
+def _i_map(data):
+    """Map lowercase insensitive keys to sensitive keys.
+
+    :param data: Data to map
+    :type data: Dict
+    :returns: Map of insensitive to sensitive keys
+    :rtype: Dict
+    """
+    return {key.lower(): key for key in data.iterkeys()}
+
+
+def _i_get(data, i_map, key):
+    """Get an item from data insensitively.
+
+    :param data: Data with sensitive keys
+    :type data: Dict
+    :param i_map: Map of lowercase keys to real keys.
+    :type i_map: Dict
+    :param key: Sensitive key
+    :type key: String
+    :returns: Value
+    :rtype: object
+    """
+    key = i_map.get(key.lower())
+    return data.get(key) if key else None
+
+
 def _get_reading_attr(reading, attr):
     """Get an attribute of a reading.
 
@@ -42,12 +69,14 @@ def metadata_field(key, r):
 
     metadata = _get_reading_attr(r, 'metadata')
 
+    i_map = _i_map(metadata)
+
     # Try nova first nova metadata fields are metadata.<key>
-    value = metadata.get('metadata.{}'.format(key))
+    value = _i_get(metadata, i_map, 'metadata.{}'.format(key))
 
     # Try glance next. Glance metadata fields are properties.<key>
     if not value:
-        value = metadata.get('properties.{}'.format(key))
+        value = _i_get(metadata, i_map, 'properties.{}'.format(key))
 
     # Try cinder next.
     # Metadata fields are stored as a list of metadata objects.
@@ -57,7 +86,7 @@ def metadata_field(key, r):
             try:
                 cinder_data = ast.literal_eval(cinder_data)
                 for obj in cinder_data:
-                    if obj.get('key') == key:
+                    if obj.get('key').lower() == key.lower():
                         value = obj.get('value')
                         break
             except Exception:
