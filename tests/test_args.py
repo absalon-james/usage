@@ -97,3 +97,12 @@ class TestArgs(unittest.TestCase):
         test_args = ['--log-level', 'debug']
         args = parser.parse_args(test_args)
         self.assertEquals('debug', args.log_level)
+
+    def test_show_tags(self):
+        test_args = []
+        args = parser.parse_args(test_args)
+        self.assertFalse(args.show_tags)
+
+        test_args = ['--show-tags']
+        args = parser.parse_args(test_args)
+        self.assertTrue(args.show_tags)

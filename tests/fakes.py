@@ -9,7 +9,8 @@ class FakeArgs:
                  config_file='config_file',
                  definition_filename='definition_filename',
                  csv_filename='csv_filename',
-                 log_level='log_level'):
+                 log_level='log_level',
+                 show_tags=False):
         """Set up the fake argument object.
 
         :param mtd: Month to date
@@ -30,6 +31,8 @@ class FakeArgs:
         :type csv_Filename: String
         :param log_level: Log Level
         :type log_level: String
+        :param show_tags: Show Tags
+        :type show_tags: Bool
         """
         self.mtd = mtd
         self.today = today
@@ -40,6 +43,7 @@ class FakeArgs:
         self.definition_filename = definition_filename
         self.csv_filename = csv_filename
         self.log_level = log_level
+        self.show_tags = show_tags
 
 
 class FakeSample:

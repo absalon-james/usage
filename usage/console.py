@@ -1,10 +1,12 @@
 import config
+import tag
 import utils
 
 from args import parser
 from clients import ClientManager
 from log import logging
 from report import Report
+
 
 LOG_LEVELS = {
     'debug': logging.DEBUG,
@@ -58,3 +60,6 @@ def console_report():
         stop=stop
     )
     r.run()
+
+    if args.show_tags:
+        print tag.all()

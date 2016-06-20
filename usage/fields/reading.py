@@ -1,5 +1,6 @@
 import ast
 
+from usage import tag
 from usage.log import logging
 
 _ALLOWED_RESOURCE_ATTRS = ['resource_id', 'project_id', 'metadata']
@@ -91,6 +92,9 @@ def metadata_field(key, r):
                         break
             except Exception:
                 pass
+
+    if value:
+        tag.track(key, value)
 
     return value
 

@@ -91,3 +91,11 @@ parser.add_argument(
     '--log-level', help="Log level", choices=['debug', 'info'],
     default='info'
 )
+
+# Set whether or not to show tags
+parser.add_argument(
+    '--show-tags',
+    help="Displays tags and values to stdout",
+    default=False,
+    action='store_true'
+)

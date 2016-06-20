@@ -8,6 +8,7 @@ from usage.console import console_report
 class TestConsoleReport(unittest.TestCase):
     """Tests the Console Report function."""
 
+    @mock.patch('usage.console.tag.all', return_value='all')
     @mock.patch('usage.console.logger')
     @mock.patch('usage.console.config')
     @mock.patch('usage.console.ClientManager')
@@ -20,7 +21,8 @@ class TestConsoleReport(unittest.TestCase):
                             m_utils,
                             m_clients,
                             m_config,
-                            m_logger):
+                            m_logger,
+                            m_all):
         m_utils.mtd_range = \
             mock.Mock(return_value=('month_start', 'month_stop'))
         m_utils.today_range = \
@@ -71,3 +73,11 @@ class TestConsoleReport(unittest.TestCase):
         console_report()
         self.assertEquals('start', m_report.call_args[1]['start'])
         self.assertEquals('month_stop', m_report.call_args[1]['stop'])
+
+        # Assert that tag.all() has not been called
+        self.assertEquals(m_all.call_count, 0)
+
+        # Test that tags.all() is called when show_tags is provided
+        m_args.return_value = FakeArgs(show_tags=True)
+        console_report()
+        self.assertEquals(m_all.call_count, 1)
