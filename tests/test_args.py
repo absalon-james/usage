@@ -80,14 +80,14 @@ class TestArgs(unittest.TestCase):
         args = parser.parse_args(test_args)
         self.assertEquals('afile', args.definition_filename)
 
-    def test_csv_filename(self):
+    def test_output_directory(self):
         test_args = []
         args = parser.parse_args(test_args)
-        self.assertEquals('/etc/usage/reports/billing.csv', args.csv_filename)
+        self.assertEquals('/etc/usage/reports', args.output_directory)
 
-        test_args = ['--csv-filename', 'thefile']
+        test_args = ['--output-directory', '/somedir']
         args = parser.parse_args(test_args)
-        self.assertEquals('thefile', args.csv_filename)
+        self.assertEquals('/somedir', args.output_directory)
 
     def test_log_level(self):
         test_args = []
@@ -106,3 +106,12 @@ class TestArgs(unittest.TestCase):
         test_args = ['--show-tags']
         args = parser.parse_args(test_args)
         self.assertTrue(args.show_tags)
+
+    def test_use_stdout(self):
+        test_args = []
+        args = parser.parse_args(test_args)
+        self.assertFalse(args.use_stdout)
+
+        test_args = ['--use-stdout']
+        args = parser.parse_args(test_args)
+        self.assertTrue(args.use_stdout)

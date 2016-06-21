@@ -27,3 +27,10 @@ class UnknownFieldFunctionError(Exception):
     def __init__(self, function_name):
         msg = 'Unknown field function {}.'.format(function_name)
         super(UnknownFieldFunctionError, self).__init__(msg)
+
+
+class NoSamplesError(Exception):
+    """Error for no samples."""
+    def __init__(self):
+        msg = "Resource does not have any samples during the time period."
+        super(NoSamplesError, self).__init__(msg)

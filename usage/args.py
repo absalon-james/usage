@@ -81,9 +81,9 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    '--csv-filename',
-    default='/etc/usage/reports/billing.csv',
-    help='Report output filename. Report time intervals will be added.'
+    '--output-directory',
+    default='/etc/usage/reports',
+    help="Base directory for report outputs."
 )
 
 # Set the log level.
@@ -98,4 +98,12 @@ parser.add_argument(
     help="Displays tags and values to stdout",
     default=False,
     action='store_true'
+)
+
+# Set whether or not to dump to stdout
+parser.add_argument(
+    '--use-stdout',
+    help='Ouput to stdout instead of file.',
+    default=False,
+    action="store_true"
 )

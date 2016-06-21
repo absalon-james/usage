@@ -8,9 +8,10 @@ class FakeArgs:
                  stop=None,
                  config_file='config_file',
                  definition_filename='definition_filename',
-                 csv_filename='csv_filename',
+                 output_directory='/basedir',
                  log_level='log_level',
-                 show_tags=False):
+                 show_tags=False,
+                 use_stdout=False):
         """Set up the fake argument object.
 
         :param mtd: Month to date
@@ -27,12 +28,14 @@ class FakeArgs:
         :type config_file: String
         :param definition_filename: Definition filename
         :type definition_filename: String
-        :param csv_filename: CSV Filename
-        :type csv_Filename: String
+        :param output_directory: Output directory
+        :type output_directory: String
         :param log_level: Log Level
         :type log_level: String
         :param show_tags: Show Tags
         :type show_tags: Bool
+        :param use_stdout: Use Stdout
+        :type use_stdout: Bool
         """
         self.mtd = mtd
         self.today = today
@@ -41,9 +44,10 @@ class FakeArgs:
         self.stop = stop
         self.config_file = config_file
         self.definition_filename = definition_filename
-        self.csv_filename = csv_filename
+        self.output_directory = output_directory
         self.log_level = log_level
         self.show_tags = show_tags
+        self.use_stdout = use_stdout
 
 
 class FakeSample:

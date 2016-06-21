@@ -1,4 +1,5 @@
 import copy
+from exc import NoSamplesError
 from exc import UnknownCounterTypeError
 from log import logging
 
@@ -25,6 +26,7 @@ class Reading:
         """
         self.start = start
         self.stop = stop
+        self._during_samples = []
         self._split_samples(samples)
         self._calculate()
         self._set_metadata()
@@ -70,6 +72,9 @@ class Reading:
         self._prior_samples = prior_samples
         self._during_samples = during_samples
         self._post_samples = post_samples
+
+        if not len(self._during_samples):
+            raise NoSamplesError()
 
     def resource_existed_before(self):
         """Determine if resource existed before self.start.

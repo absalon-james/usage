@@ -4,6 +4,7 @@ import query
 import utils
 
 from exc import InvalidTimeRangeError
+from exc import NoSamplesError
 from log import logging
 from reading import Reading
 
@@ -99,7 +100,10 @@ class Meter:
         """
         # Yield a reading for each resource/meter pair
         for _, g in itertools.groupby(samples, lambda x: x.resource_id):
-            yield Reading(list(g), start, stop)
+            try:
+                yield Reading(list(g), start, stop)
+            except NoSamplesError:
+                continue
 
     def read(self, start=None, stop=None, q=None):
         """Read a meter.

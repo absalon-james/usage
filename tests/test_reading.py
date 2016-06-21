@@ -3,6 +3,7 @@ import mock
 import unittest
 
 from fakes import FakeSample
+from usage.exc import NoSamplesError
 from usage.exc import UnknownCounterTypeError
 from usage.reading import Reading
 
@@ -16,10 +17,12 @@ five_hours_ago = now - datetime.timedelta(hours=5)
 
 class TestReading(unittest.TestCase):
     """Tests the reading class."""
-    def test_init(self):
-        r = Reading([], 'start', 'stop')
-        self.assertEquals(r.start, 'start')
-        self.assertEquals(r.stop, 'stop')
+
+    @mock.patch('usage.reading.Reading._split_samples')
+    def test_init(self, m_split):
+        r = Reading([], four_hours_ago, one_hour_ago)
+        self.assertEquals(r.start, four_hours_ago)
+        self.assertEquals(r.stop, one_hour_ago)
 
     def test_split_samples(self):
         # Test Samples with before, during, and after
@@ -46,13 +49,6 @@ class TestReading(unittest.TestCase):
         self.assertTrue(r.resource_existed_before())
         # Resource should exist after stop
         self.assertTrue(r.resource_existed_after())
-
-        # Test no samples
-        samples = []
-        r = Reading(samples, four_hours_ago, one_hour_ago)
-        self.assertEquals(0, len(r.samples))
-        self.assertFalse(r.resource_existed_before())
-        self.assertFalse(r.resource_existed_after())
 
         # Test no prior samples
         samples = [
@@ -90,10 +86,6 @@ class TestReading(unittest.TestCase):
         r = Reading(samples, four_hours_ago, now)
         self.assertEquals(four_hours_ago, r.usage_start)
 
-        # Test usage start with no samples
-        r = Reading([], four_hours_ago, two_hours_ago)
-        self.assertTrue(r.usage_start is None)
-
     def test_usage_stop(self):
         # Test usage stop with no post samples
         samples = [FakeSample(timestamp=three_hours_ago)]
@@ -107,10 +99,6 @@ class TestReading(unittest.TestCase):
         ]
         r = Reading(samples, four_hours_ago, two_hours_ago)
         self.assertEquals(two_hours_ago, r.usage_stop)
-
-        # Test usage stop with no samples
-        r = Reading([], four_hours_ago, two_hours_ago)
-        self.assertTrue(r.usage_stop is None)
 
     def test_resource_id(self):
         samples = [FakeSample(timestamp=one_hour_ago)]
@@ -128,8 +116,8 @@ class TestReading(unittest.TestCase):
         self.assertEquals(r.project_id, 'project_id')
 
     def test_no_samples_reading(self):
-        r = Reading([], one_hour_ago, now)
-        self.assertTrue(r.value is None)
+        with self.assertRaises(NoSamplesError):
+            Reading([], one_hour_ago, now)
 
     def test_unknown_meter(self):
         samples = [FakeSample(counter_type='unknown', timestamp=two_hours_ago)]
@@ -237,11 +225,12 @@ class TestReading(unittest.TestCase):
         r = Reading(samples, four_hours_ago, two_hours_ago)
         self.assertEquals(r.value, 9)
 
-    def test_metdata(self):
+    def test_metadata(self):
         # Test no samples:
-        samples = []
-        r = Reading(samples, five_hours_ago, now)
-        self.assertTrue(r.metadata is None)
+        with mock.patch('usage.reading.Reading._split_samples'):
+            samples = []
+            r = Reading(samples, five_hours_ago, now)
+            self.assertTrue(r.metadata is None)
 
         # Test samples with no status fields in resource metadata
         samples = [

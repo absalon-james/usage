@@ -19,15 +19,17 @@ class Report:
     def __init__(self,
                  client,
                  definition_filename,
-                 csv_filename,
+                 output,
                  start=None,
                  stop=None):
         """Read in report definition from file.
 
+        :param client: Ceilometer client
+        :type client:
         :param definition_filename: Name of report definition file.
         :type definition_filename: String
-        :param csv_filename: Name of the output file without dates.
-        :type csv_filename: String
+        :param output: Output object with stream attribute
+        :type output: output.File|output.Stream
         :param start: Start of report in utc
         :type start: Datetime
         :param stop: Stop of report in utc
@@ -37,7 +39,7 @@ class Report:
         self._definition = None
         self._load_definition()
 
-        self._csv_filename = csv_filename
+        self.output = output
         self._headers_written = False
 
         self._client = client
@@ -50,24 +52,6 @@ class Report:
         """Load a report definition."""
         with open(self._definition_filename, 'r') as f:
             self._definition = yaml.safe_load(f)
-
-    @property
-    def csv_filename(self):
-        """Create a csv filename.
-
-        The date range will be added.
-
-        :return: CSV output filename
-        :rtype: String
-        """
-        csv_filename = self._csv_filename
-        if csv_filename.endswith('.csv'):
-            csv_filename, _ = csv_filename.rsplit('.')
-        return '{}_{}_to_{}.csv'.format(
-            csv_filename,
-            self._start.isoformat(),
-            self._stop.isoformat()
-        )
 
     def _field_function(self, func, item, reading):
         """Call a field function.
@@ -97,23 +81,15 @@ class Report:
 
         :yield: csv.DictWriter
         """
-        filename = self.csv_filename
-        csv_file = None
-        try:
-            # Open in append mode
-            csv_file = open(filename, 'a')
-            writer = csv.DictWriter(
-                csv_file,
-                [c['name'] for c in self._definition.get('columns')]
-            )
-            # Write csv column headers
-            if not self._headers_written:
-                writer.writeheader()
-
-            yield writer
-        finally:
-            if csv_file:
-                csv_file.close()
+        # Open in append mode
+        writer = csv.DictWriter(
+            self.output.stream,
+            [c['name'] for c in self._definition.get('columns')]
+        )
+        # Write csv column headers
+        if not self._headers_written:
+            writer.writeheader()
+        yield writer
 
     def run(self):
         """Run the report."""
@@ -137,5 +113,5 @@ class Report:
                     csv_scope.writerow(line_item)
 
         elapsed = time.time() - report_start
-        logger.info('Report is at {}'.format(self.csv_filename))
+        logger.info('Report is at {}'.format(self.output.location))
         logger.debug('Finished report in {} seconds'.format(elapsed))
