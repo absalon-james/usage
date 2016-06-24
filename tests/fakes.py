@@ -1,4 +1,36 @@
-class FakeArgs:
+class FakeSummaryArgs:
+    """Fake arguments object."""
+    def __init__(self,
+                 config_file='config_file',
+                 log_level='log_level',
+                 csv_file='csv_file',
+                 group_by='group_by',
+                 project_id_field='project_id_field',
+                 cost_field='cost_field'):
+        """Set up the fake argument object.
+
+        :param config_file: Config file
+        :type config_file: String
+        :param log_level: Log level
+        :type log_level: String
+        :param csv_file: Csv file
+        :type csv_file: String
+        :param group_by: Group by
+        :type group_by: String
+        :param project_id_field: Project id field
+        :type project_id_field: String
+        :param cost_field: Cost field
+        :type cost_field: String
+        """
+        self.config_file = config_file
+        self.log_level = log_level
+        self.csv_file = csv_file
+        self.group_by = group_by
+        self.project_id_field = project_id_field
+        self.cost_field = cost_field
+
+
+class FakeReportArgs:
     """Fake arguments object."""
     def __init__(self,
                  mtd=False,

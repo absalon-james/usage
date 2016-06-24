@@ -5,6 +5,8 @@ billing_entity: OpenStack
 columns:
   - name: Resource Id
     func: resource_id
+  - name: Project Id
+    func: project_id
   - name: Meter Name
     func: meter_name
   - name: user:appid

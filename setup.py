@@ -5,6 +5,7 @@ from usage.meta import description
 entry_points = """
     [console_scripts]
     usage-report=usage.console:console_report
+    usage-summary=usage.console:console_summary
     [usage.conversions]
     seconds_to_hours=usage.conversions.time_units:seconds_to_hours
     bytes_to_gigabytes=usage.conversions.disk_units:bytes_to_gigabytes
@@ -25,6 +26,7 @@ entry_points = """
     meter_name=usage.fields.item:meter_name
     operation=usage.fields.item:operation
     payer_account_id=usage.fields.reading:payer_account_id
+    project_id=usage.fields.reading:project_id
     product_code=usage.fields.item:product_code
     product_name=usage.fields.item:product_name
     resource_id=usage.fields.reading:resource_id

@@ -210,6 +210,21 @@ def payer_account_id(d, i, r):
     return _get_reading_attr(r, 'project_id')
 
 
+def project_id(d, i, r):
+    """Get project_id
+
+    :param d: Report definition
+    :type d: Dict
+    :param i: Item definition
+    :type i: Dict
+    :param r: Meter reading
+    :type r: usage.reading.Reading
+    :return: project_id
+    :rtype: String
+    """
+    return _get_reading_attr(r, 'project_id')
+
+
 def resource_id(d, i, r):
     """Get resource id from meter reading.
 

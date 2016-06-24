@@ -22,6 +22,7 @@ from usage.fields.reading import display_name
 from usage.fields.reading import instance_type
 from usage.fields.reading import metadata_field
 from usage.fields.reading import payer_account_id
+from usage.fields.reading import project_id
 from usage.fields.reading import resource_id
 from usage.fields.reading import timeinterval
 from usage.fields.reading import usage_account_id
@@ -118,6 +119,13 @@ class TestPayerAccountId(unittest.TestCase):
     def test_payer_account_id(self):
         r = FakeReading()
         self.assertEquals(payer_account_id(None, None, r), 'project_id')
+
+
+class TestProjectId(unittest.TestCase):
+    """Tests the project_id field function."""
+    def test_project_id(self):
+        r = FakeReading()
+        self.assertEquals(project_id(None, None, r), 'project_id')
 
 
 class TestTimeInterval(unittest.TestCase):

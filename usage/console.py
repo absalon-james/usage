@@ -3,10 +3,12 @@ import output
 import tag
 import utils
 
-from args import parser
+from args.report import parser as report_parser
+from args.summary import parser as summary_parser
 from clients import ClientManager
 from log import logging
 from report import Report
+from summary import Summary
 
 
 LOG_LEVELS = {
@@ -18,10 +20,25 @@ logger = logging.getLogger('usage')
 logger.setLevel(logging.INFO)
 
 
+def console_summary():
+    """Summarizes a csv report."""
+    args = summary_parser.parse_args()
+    conf = config.load(args.config_file)
+    logger.setLevel(LOG_LEVELS.get(args.log_level.lower(), 'info'))
+    clientmanager = ClientManager(**conf.get('auth_kwargs', {}))
+    Summary(
+        domain_client=clientmanager.get_domain(),
+        input_file=args.csv_file,
+        project_id_column=args.project_id_field,
+        cost_column=args.cost_field,
+        group_by=args.group_by
+    ).output()
+
+
 def console_report():
     """Runs a report from the cli."""
 
-    args = parser.parse_args()
+    args = report_parser.parse_args()
     conf = config.load(args.config_file)
     logger.setLevel(LOG_LEVELS.get(args.log_level.lower(), 'info'))
 

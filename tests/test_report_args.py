@@ -1,7 +1,7 @@
 import datetime
 import unittest
 
-from usage.args import parser
+from usage.args.report import parser
 
 
 class TestArgs(unittest.TestCase):

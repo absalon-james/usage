@@ -4,8 +4,9 @@ Module for parsing arguments from the command line.
 Import parser from this module.
 """
 import argparse
-import meta
-import utils
+
+from usage import meta
+from usage import utils
 
 
 def check_datetime(date_str):

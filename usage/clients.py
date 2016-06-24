@@ -1,9 +1,56 @@
 """
 Provides a cross project client manager.
 """
+import keystoneclient
+
 from keystoneauth1 import loading
 from keystoneauth1 import session
 from ceilometerclient import client as ceilometerclient
+
+
+class DomainClient(object):
+    """The openstackclient is lame."""
+    def __init__(self, **kwargs):
+        """Create the adapter."""
+        kwargs.setdefault('user_agent', 'python-myclient')
+        kwargs.setdefault('service_type', 'identity')
+        kwargs.setdefault('version', '3')
+        self.http = keystoneclient.adapter.Adapter(**kwargs)
+
+    def get_project(self, project_id):
+        """Get project data.
+
+        :param project_id: Id of the project.
+        :type project_id: String
+        :return: Project data
+        :rtype: Dict
+        """
+        data = self.http.get('/projects/{}'.format(project_id)).json()
+        data = data['project']
+        return data
+
+    def get_domain(self, domain_id):
+        """Get domain data.
+
+        :param domain_id: Id of the domain
+        :type domain_id: String
+        :return: Domain data
+        :rtype: Dict
+        """
+        data = self.http.get('/domains/{}'.format(domain_id)).json()
+        data = data['domain']
+        return data
+
+    def get_domain_for_project(self, project_id):
+        """Get domain data for a project.
+
+        :param project_id: Id of the project
+        :type project_id: String
+        :return: Domain data
+        :rtype: Dict
+        """
+        domain_id = self.get_project(project_id)['domain_id']
+        return self.get_domain(domain_id)
 
 
 class ClientManager(object):
@@ -20,10 +67,8 @@ class ClientManager(object):
         :param project_id: String project_id - Tenant uuid
         """
         self.session = None
-        self.nova = None
-        self.glance = None
-        self.cinder = None
         self.ceilometer = None
+        self.domain = None
         self.auth_kwargs = kwargs
 
     def get_session(self):
@@ -49,3 +94,13 @@ class ClientManager(object):
                 **self.auth_kwargs
             )
         return self.ceilometer
+
+    def get_domain(self):
+        """Get an domain client instance.
+
+        :return: Domain client instance.
+        :rtype: DomainClient
+        """
+        if self.domain is None:
+            self.domain = DomainClient(session=self.get_session())
+        return self.domain
