@@ -45,6 +45,7 @@ setup(
     author_email="james.absalon@rackspace.com",
     packages=[
         'usage',
+        'usage.args',
         'usage.conversions',
         'usage.fields'
     ],
