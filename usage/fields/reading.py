@@ -1,6 +1,7 @@
 import ast
 
 from usage import tag
+from usage.conversions.time_units import seconds_to_hours
 from usage.log import logging
 
 _ALLOWED_RESOURCE_ATTRS = ['resource_id', 'project_id', 'metadata']
@@ -99,6 +100,29 @@ def metadata_field(key, r):
     return value
 
 
+def image_metadata_field(key, r):
+    """Get value of image metadata field if present.
+
+    Special field function that is not called like the others.
+    Only accepts a key parameter and a reading.
+
+    :param key: Image metadata key. Looks like image_metadata:<real key>
+    :type key: String
+    :param reading: Meter reading
+    :type reading: usage.reading.Reading
+    :return: Value of image metadata key
+    :rtype: String
+    """
+    value = None
+    # Parse out the key
+    _, key = key.split(':', 1)
+    metadata = _get_reading_attr(r, 'metadata')
+    i_map = _i_map(metadata)
+
+    value = _i_get(metadata, i_map, 'image_meta.{}'.format(key))
+    return value
+
+
 def availability_zone(d, i, r):
     """Get availability zone from reading metadata.
 
@@ -178,6 +202,19 @@ def display_name(d, i, r):
     :type r: usage.reading.Reading
     """
     return r.metadata.get('display_name')
+
+
+def hours(d, i, r):
+    """Get the hours for the resource.
+
+    :param d: Report definition
+    :type d: Dict
+    :param i: Item definition
+    :type i: Dict
+    :param r: Meter reading
+    :type r: usage.reading.Reading
+    """
+    return seconds_to_hours((r.usage_stop - r.usage_start).seconds)
 
 
 def instance_type(d, i, r):

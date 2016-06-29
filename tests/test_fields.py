@@ -19,6 +19,8 @@ from usage.fields.reading import billing_period_end_date
 from usage.fields.reading import billing_period_start_date
 from usage.fields.reading import cost
 from usage.fields.reading import display_name
+from usage.fields.reading import hours
+from usage.fields.reading import image_metadata_field
 from usage.fields.reading import instance_type
 from usage.fields.reading import metadata_field
 from usage.fields.reading import payer_account_id
@@ -105,6 +107,29 @@ class TestMetadataField(unittest.TestCase):
 
         # Test insensitive key
         self.assertEquals(metadata_field('metadata:tEsT', r), 'cinder')
+
+
+class TestImageMetadataField(unittest.TestCase):
+    """Tests the image metadata field function."""
+    key = 'image_metadata:test'
+
+    def test_image_metadata(self):
+        metadata = {'image_meta.test': 'value'}
+        r = FakeReading(metadata=metadata)
+        self.assertEquals(image_metadata_field(self.key, r), 'value')
+
+        # Test case insensitivity
+        metadata = {'image_meta.TeST': 'value'}
+        r = FakeReading(metadata=metadata)
+        self.assertEquals(
+            image_metadata_field('image_metadata:tEsT', r),
+            'value'
+        )
+
+        # Test missing metadata
+        metadata = {}
+        r = FakeReading(metadata=metadata)
+        assert(image_metadata_field(self.key, r) is None)
 
 
 class TestResourceId(unittest.TestCase):
@@ -196,6 +221,15 @@ class TestDisplayName(unittest.TestCase):
         self.assertTrue(display_name(None, None, r) is None)
         r = FakeReading(metadata={'display_name': 'display_name'})
         self.assertEquals(display_name(None, None, r), 'display_name')
+
+
+class TestHours(unittest.TestCase):
+    """Tests the hours field function."""
+    def test_hours(self):
+        stop = datetime.datetime.utcnow()
+        start = stop - datetime.timedelta(hours=1)
+        r = FakeReading(start=start, stop=stop)
+        self.assertEquals(hours(None, None, r), 1)
 
 
 class TestInstanceType(unittest.TestCase):

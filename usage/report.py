@@ -6,6 +6,7 @@ import yaml
 from contextlib import contextmanager
 from exc import UnknownFieldFunctionError
 from fields import field_function
+from fields.reading import image_metadata_field
 from fields.reading import metadata_field
 from log import logging
 from meter import Meter
@@ -73,6 +74,8 @@ class Report:
         except UnknownFieldFunctionError as uffe:
             if func.startswith('metadata:'):
                 return metadata_field(func, reading)
+            elif func.startswith('image_metadata:'):
+                return image_metadata_field(func, reading)
             raise uffe
 
     @contextmanager
