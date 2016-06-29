@@ -36,6 +36,9 @@ git clone https://github.com/absalon-james/usage.git
 mkdir -p /etc/usage
 cp usage/sample-usage.yaml /etc/usage/usage.yaml
 
+# Cp the sample report definition
+cp usage/sample-report.yaml /etc/usage/report.yaml
+
 # Run setup.py develop
 
 cd usage
