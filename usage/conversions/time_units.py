@@ -6,4 +6,4 @@ def seconds_to_hours(s):
     :return: Number of hours
     :rtype: Float
     """
-    return s / 3600
+    return float(s) / 3600

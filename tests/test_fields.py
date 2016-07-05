@@ -231,6 +231,11 @@ class TestHours(unittest.TestCase):
         r = FakeReading(start=start, stop=stop)
         self.assertEquals(hours(None, None, r), 1)
 
+        stop = datetime.datetime.utcnow()
+        start = stop - datetime.timedelta(hours=0.5)
+        r = FakeReading(start=start, stop=stop)
+        self.assertEquals(hours(None, None, r), 0.5)
+
 
 class TestInstanceType(unittest.TestCase):
     """Tests the instance type field function."""

@@ -19,6 +19,7 @@ entry_points = """
     currency_code=usage.fields.item:currency_code
     description=usage.fields.item:description
     display_name=usage.fields.reading:display_name
+    hours=usage.fields.reading:hours
     instance_type=usage.fields.reading:instance_type
     invoice_id=usage.fields.report:invoice_id
     item_rate=usage.fields.item:item_rate
