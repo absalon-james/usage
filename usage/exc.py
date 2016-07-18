@@ -29,6 +29,13 @@ class UnknownFieldFunctionError(Exception):
         super(UnknownFieldFunctionError, self).__init__(msg)
 
 
+class UnknownLicenserError(Exception):
+    """Error for unknown licenser."""
+    def __init__(self, licenser_name):
+        msg = 'Unknown licenser {}.'.format(licenser_name)
+        super(UnknownLicenserError, self).__init__(msg)
+
+
 class NoSamplesError(Exception):
     """Error for no samples."""
     def __init__(self):

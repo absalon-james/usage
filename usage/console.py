@@ -20,6 +20,22 @@ logger = logging.getLogger('usage')
 logger.setLevel(logging.INFO)
 
 
+def console_licensing():
+    """Summarizes a csv report."""
+    from licensing import Licensing
+    from args.licensing import parser as licensing_parser
+    from domain_cache import set_domain_client
+    args = licensing_parser.parse_args()
+    conf = config.load(args.config_file)
+    logger.setLevel(LOG_LEVELS.get(args.log_level.lower(), 'info'))
+    clientmanager = ClientManager(**conf.get('auth_kwargs', {}))
+    set_domain_client(clientmanager.get_domain())
+    Licensing(
+        definition_file=args.definition_file,
+        input_file=args.csv_file
+    ).output()
+
+
 def console_summary():
     """Summarizes a csv report."""
     args = summary_parser.parse_args()
@@ -37,7 +53,6 @@ def console_summary():
 
 def console_report():
     """Runs a report from the cli."""
-
     args = report_parser.parse_args()
     conf = config.load(args.config_file)
     logger.setLevel(LOG_LEVELS.get(args.log_level.lower(), 'info'))

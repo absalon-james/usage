@@ -1,0 +1,83 @@
+name: 'mtd'
+currency_code: USD
+billing_entity: OpenStack
+
+columns:
+  - name: Resource Id
+    func: resource_id
+  - name: Project Id
+    func: project_id
+  - name: Meter Name
+    func: meter_name
+  - name: user:UAI
+    func: metadata:UAI
+  - name: user:environment
+    func: metadata:environment
+  - name: image:OS Distro
+    func: image_metadata:os_distro
+  - name: image:OS Version
+    func: image_metadata:os_version
+  - name: image:Oracle Edition
+    func: image_metadata:sw_database_oracle_edition
+  - name: image:Oracle Version
+    func: image_metadata:sw_database_oracle_version
+  - name: image:SQLServer Edition
+    func: image_metadata:sw_database_sqlserver_edition
+  - name: image:SQLServer Version
+    func: image_metadata:sw_database_sqlserver_version
+  - name: Hours
+    func: hours
+  - name: Display Name
+    func: display_name
+  - name: Availability Zone
+    func: availability_zone
+  - name: Instance Type/Flavor
+    func: instance_type
+  - name: Invoice Id
+    func: invoice_id
+  - name: Billing Entity
+    func: billing_entity
+  - name: Billing Period Start Date
+    func: billing_period_start_date
+  - name: Billing Period End Date
+    func: billing_period_end_date
+  - name: Usage Account Id
+    func: usage_account_id
+  - name: Line Item Type
+    func: line_item_type
+  - name: Usage Start Date
+    func: usage_start_date
+  - name: Usage End Date
+    func: usage_end_date
+  - name: Product Code
+    func: product_code
+  - name: Usage Type
+    func: usage_type
+  - name: Operation
+    func: operation
+  - name: Usage Amount
+    func: usage_amount
+  - name: Item Rate
+    func: item_rate
+  - name: Cost
+    func: cost
+  - name: Currency Code
+    func: currency_code
+  - name: Description
+    func: description
+  - name: Product Name
+    func: product_name
+  - name: Usage Type
+    func: usage_type
+
+items:
+  - meter_name: vcpus
+    billing_entity: OpenStack
+    line_item_type: Usage
+    product_code: Compute
+    usage_type: Vcpu Hours
+    operation: Runinstances
+    currency_code: USD
+    item_rate: 0.2
+    description: cpu Hours
+    product_name: Compute

@@ -1,0 +1,49 @@
+licensers:
+
+  - type: OracleCount
+    project_id_field: Project Id
+    costs:
+      enterprise:
+        12.1.0.2: 0
+      standard:
+        12.1.0.2: 0
+
+  - type: OracleHours
+    project_id_field: Project Id
+    hours_field: Hours
+    costs:
+      enterprise:
+        12.1.0.2: 2
+      standard:
+        12.1.0.2: 1
+
+  - type: SQLServerCount
+    project_id_field: Project Id
+    costs:
+      enterprise:
+        '2016': 0
+      standard:
+        '2016': 0
+
+  - type: SQLServerHours
+    project_id_field: Project Id
+    hours_field: Hours
+    costs:
+      enterprise:
+        '2016': 5
+      standard:
+        '2016': 10
+
+  - type: WindowsCount
+    project_id_field: Project Id
+    costs:
+      windows:
+        'NT 10.0': 0
+        'NT 6.3': 0
+
+  - type: WindowsHours
+    project_id_field: Project Id
+    costs:
+      windows:
+        'NT 10.0': 30
+        'NT 6.3': 20

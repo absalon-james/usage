@@ -4,6 +4,7 @@ from usage.meta import description
 
 entry_points = """
     [console_scripts]
+    usage-licensing=usage.console:console_licensing
     usage-report=usage.console:console_report
     usage-summary=usage.console:console_summary
     [usage.conversions]
@@ -37,6 +38,13 @@ entry_points = """
     usage_end_date=usage.fields.reading:usage_end_date
     usage_start_date=usage.fields.reading:usage_start_date
     usage_type=usage.fields.item:usage_type
+    [usage.licensers]
+    OracleCount=usage.licensing.oracle:CountLicenser
+    OracleHours=usage.licensing.oracle:HourLicenser
+    SQLServerCount=usage.licensing.sqlserver:CountLicenser
+    SQLServerHours=usage.licensing.sqlserver:HourLicenser
+    WindowsHours=usage.licensing.windows:HourLicenser
+    WindowsCount=usage.licensing.windows:CountLicenser
 """
 
 setup(
@@ -48,7 +56,8 @@ setup(
         'usage',
         'usage.args',
         'usage.conversions',
-        'usage.fields'
+        'usage.fields',
+        'usage.licensing'
     ],
     entry_points=entry_points,
     package_data={'usage': ['usage/*']},
