@@ -1,6 +1,7 @@
 """
 Provides a cross project client manager.
 """
+import copy
 import keystoneclient
 
 from keystoneauth1 import loading
@@ -78,7 +79,10 @@ class ClientManager(object):
         """
         if self.session is None:
             loader = loading.get_plugin_loader('password')
-            auth = loader.load_from_options(**self.auth_kwargs)
+            auth_kwargs = copy.copy(self.auth_kwargs)
+            if 'endpoint_type' in auth_kwargs:
+                auth_kwargs.pop('endpoint_type')
+            auth = loader.load_from_options(**auth_kwargs)
             self.session = session.Session(auth=auth)
         return self.session
 
@@ -102,5 +106,8 @@ class ClientManager(object):
         :rtype: DomainClient
         """
         if self.domain is None:
-            self.domain = DomainClient(session=self.get_session())
+            kwargs = {'session': self.get_session()}
+            if 'endpoint_type' in self.auth_kwargs:
+                kwargs['interface'] = self.auth_kwargs['endpoint_type']
+            self.domain = DomainClient(**kwargs)
         return self.domain

@@ -76,7 +76,7 @@ class Summary:
         :type row: Dict
         """
         project_id = row[self.project_id_column]
-        group_by = row[self.group_by] or 'Other'
+        group_by = row.get(self.group_by) or 'Other'
         cost = float(row[self.cost_column])
 
         domain_data = self.data.setdefault(
