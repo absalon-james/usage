@@ -43,7 +43,8 @@ class FakeReportArgs:
                  output_directory='/basedir',
                  log_level='log_level',
                  show_tags=False,
-                 use_stdout=False):
+                 use_stdout=False,
+                 max_samples=10):
         """Set up the fake argument object.
 
         :param mtd: Month to date
@@ -68,6 +69,8 @@ class FakeReportArgs:
         :type show_tags: Bool
         :param use_stdout: Use Stdout
         :type use_stdout: Bool
+        :param max_samples: Max number of samples
+        :type max_samples: Integer
         """
         self.mtd = mtd
         self.today = today
@@ -80,6 +83,7 @@ class FakeReportArgs:
         self.log_level = log_level
         self.show_tags = show_tags
         self.use_stdout = use_stdout
+        self.max_samples = max_samples
 
 
 class FakeSample:

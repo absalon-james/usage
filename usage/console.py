@@ -98,7 +98,8 @@ def console_report():
             args.definition_filename,
             out,
             start=start,
-            stop=stop
+            stop=stop,
+            max_samples=args.max_samples
         )
         r.run()
     finally:

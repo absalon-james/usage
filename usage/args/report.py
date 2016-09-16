@@ -74,6 +74,14 @@ parser.add_argument(
     help="ISO8601 Report Stop Date and Time"
 )
 
+# Include an option for max number of samples
+parser.add_argument(
+    '--max-samples',
+    default=15000,
+    type=int,
+    help="Maximum number of samples per query."
+)
+
 # Include an option for filename
 parser.add_argument(
     '--definition-filename',

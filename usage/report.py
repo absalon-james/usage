@@ -21,6 +21,7 @@ class Report:
                  client,
                  definition_filename,
                  output,
+                 max_samples=15000,
                  start=None,
                  stop=None):
         """Read in report definition from file.
@@ -31,6 +32,8 @@ class Report:
         :type definition_filename: String
         :param output: Output object with stream attribute
         :type output: output.File|output.Stream
+        :param max_samples: Number of samples per query max.
+        :type max_samples: Integer
         :param start: Start of report in utc
         :type start: Datetime
         :param stop: Stop of report in utc
@@ -42,6 +45,7 @@ class Report:
 
         self.output = output
         self._headers_written = False
+        self.max_samples = max_samples
 
         self._client = client
 
@@ -103,7 +107,11 @@ class Report:
         with self.csv_scope() as csv_scope:
             # Iterate over items in definition.
             for item in items:
-                m = Meter(self._client, item['meter_name'])
+                m = Meter(
+                    self._client,
+                    item['meter_name'],
+                    max_samples=self.max_samples
+                )
                 # Meter.read() returns a generator that yields readings.
                 # One reading per resource/meter pair
                 for reading in m.read(start=self._start, stop=self._stop):

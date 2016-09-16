@@ -32,16 +32,19 @@ class Meter:
     """
     Class for interacting with a ceilometer meter.
     """
-    def __init__(self, client, name):
+    def __init__(self, client, name, max_samples=15000):
         """Init the meter.
 
         :param client: Ceilometer client
         :type client: ceilometerclient.client
         :param name: Name of the meter
         :type name: String
+        :param max_samples: Max number of samples per query.
+        :type max_samples: Integer
         """
         self.client = client
         self.name = name
+        self.max_samples = max_samples
 
         # Extra time is 4 hours. 4 * 60 * 60 = 14400
         self._extra_time = datetime.timedelta(seconds=14400)
@@ -64,25 +67,6 @@ class Meter:
             if group[i].resource_metadata.get('status') not in deleted_status:
                 return group[i]
         return group[-1]
-
-    def count(self, q):
-        """Get a count of samples matching q.
-
-        Since ceilometer does not support sample paging and a default limit of
-        100 samples, we need to use stats to count the samples and change the
-        limit from 100 the actual number of samples.
-
-        :param q: Listg of filters.
-        :type q: List
-        :return: Count of samples
-        :rtype: Integer
-        """
-        # Get count of samples
-        stats = self.client.statistics.list(meter_name=self.name, q=q,
-                                            aggregates=[{'func': 'count'}])
-        if not stats:
-            return 0
-        return stats[0].count
 
     def _reading_generator(self, samples, start, stop):
         """Yields one reading at a time.
@@ -138,16 +122,20 @@ class Meter:
             'timestamp', 'le', stop + self._extra_time, 'datetime'
         ))
 
-        # Count of samples:
-        count = self.count(q)
-        logger.debug("{} samples according to statistics.".format(count))
-        if not count:
-            return []
+        schedule = query.Scheduler(
+            self.client,
+            self.name,
+            start - self._extra_time,
+            stop + self._extra_time,
+            q=[],
+            max_samples=self.max_samples
+        )
+        for s_start, s_stop, s_query, s_count in schedule:
+            logger.debug("{} - {} - {}".format(s_start, s_stop, s_count))
+        logger.info("Count of scheduled samples {}".format(schedule.count()))
 
         # Get samples
-        samples = self.client.samples.list(
-            meter_name=self.name, q=q, limit=count
-        )
+        samples = schedule.list()
         logger.debug(
             "{} samples according to sample-list.".format(len(samples))
         )

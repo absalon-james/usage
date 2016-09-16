@@ -71,6 +71,15 @@ class TestArgs(unittest.TestCase):
         args = parser.parse_args(test_args)
         self.assertTrue(isinstance(args.stop, datetime.datetime))
 
+    def test_max_samples(self):
+        test_args = []
+        args = parser.parse_args(test_args)
+        self.assertEquals(15000, args.max_samples)
+
+        test_args = ['--max-samples', '1']
+        args = parser.parse_args(test_args)
+        self.assertEquals(1, args.max_samples)
+
     def test_definition_filename(self):
         test_args = []
         args = parser.parse_args(test_args)

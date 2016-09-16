@@ -15,6 +15,11 @@ four_hours_ago = now - datetime.timedelta(hours=4)
 five_hours_ago = now - datetime.timedelta(hours=5)
 
 
+class FakeStatCount:
+    def __init__(self, count):
+        self.__dict__.update(count=count)
+
+
 class TestCmpSample(unittest.TestCase):
 
     def test_comparison(self):
@@ -47,21 +52,6 @@ class TestMeter(unittest.TestCase):
         m = Meter('client', 'meter_name')
         self.assertEquals(m.client, 'client')
         self.assertEquals(m.name, 'meter_name')
-
-    def test_count(self):
-        """Tests the count method."""
-        class FakeStats:
-            def __init__(self, count):
-                self.count = count
-
-        m = Meter('client', 'meter_name')
-        m.client = mock.Mock()
-        m.client.statistics.list = mock.Mock()
-        m.client.statistics.list.return_value = [FakeStats(10)]
-        self.assertEquals(m.count('q'), 10)
-
-        m.client.statistics.list.return_value = []
-        self.assertEquals(m.count('q'), 0)
 
     @mock.patch('usage.meter.Reading')
     def test_read(self, mock_reading):
@@ -105,6 +95,9 @@ class TestMeter(unittest.TestCase):
             )
         ]
         m.client.samples.list.return_value = samples
+        m.client.statistics.list.return_value = [
+            FakeStatCount(4)
+        ]
 
         expected_resource_ids = ['a', 'b']
         expected_timestamps = [two_hours_ago, one_hour_ago]
