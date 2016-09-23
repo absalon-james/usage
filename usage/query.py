@@ -1,8 +1,16 @@
 import copy
+import time
 
 from log import logging
 
 logger = logging.getLogger('usage.query')
+
+_OPS = {
+    "gt": ">",
+    "ge": ">=",
+    "lt": "<",
+    "le": "<="
+}
 
 
 def query(field, op, value, type=''):
@@ -25,6 +33,61 @@ def query(field, op, value, type=''):
         'value': value,
         'type': type
     }
+
+
+def _query_string(q):
+    """Creates query string as it would be used from the cli.
+
+    :param q: List of query filters
+    :type q: List
+    :returns: Cli query string
+    :rtype: string
+    """
+    filters = []
+    template = "{}{}{}"
+    for f in q:
+        value = f.get('value')
+        if f.get("type") == 'datetime':
+            value = value.isoformat()
+        filters.append(
+            template.format(f.get('field'), _OPS.get(f.get('op')), value)
+        )
+    return ";".join(filters)
+
+
+def _sample_list_to_cli(meter_name, q, limit):
+    """Creates a sample list command as it would be used from cli.
+
+    :param meter_name: Name of the meter
+    :type meter_name: String
+    :param q: List of query filters
+    :type q: List
+    :param limit: Number of samples to return
+    :type limit: Integer
+    :returns: Cli string.
+    :rtype: String
+    """
+    return 'ceilometer sample-list -m {} -q "{}" --limit {}'.format(
+        meter_name,
+        _query_string(q),
+        limit
+    )
+
+
+def _count_to_cli(meter_name, q):
+    """Creates a count command as it would be used from cli.
+
+    :param meter_name: Name of the meter
+    :type meter_name: String
+    :param q: List of query filters
+    :type q: List
+    :returns: Cli string.
+    :rtype: String
+    """
+    return 'ceilometer statistics -m {} -q "{}" -a count'.format(
+        meter_name,
+        _query_string(q)
+    )
 
 
 class Scheduler(object):
@@ -71,10 +134,15 @@ class Scheduler(object):
         :rtype: Integer
         """
         # Get count of samples
+        logger.info(_count_to_cli(self.meter_name, q))
+        p_start = time.time()
         stats = self.client.statistics.list(
             meter_name=self.meter_name,
             q=q,
             aggregates=[{'func': 'count'}]
+        )
+        logger.info(
+            "Count finished in {} seconds.".format(time.time() - p_start)
         )
         if not stats:
             return 0
@@ -137,11 +205,17 @@ class Scheduler(object):
                 "Performing query {} of {}".format(i + 1, total_queries)
             )
             _, _, q, limit = item
+            logger.info(_sample_list_to_cli(self.meter_name, q, limit))
+            p_start = time.time()
             samples.extend(
                 self.client.samples.list(
                     meter_name=self.meter_name,
                     q=q,
                     limit=limit
                 )
+            )
+            logger.info(
+                "sample-list finished in {} seconds."
+                .format(time.time() - p_start)
             )
         return samples

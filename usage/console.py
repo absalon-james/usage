@@ -1,6 +1,7 @@
 import config
 import output
 import tag
+import time
 import utils
 
 from args.report import parser as report_parser
@@ -93,6 +94,7 @@ def console_report():
         start, stop = utils.mtd_range()
         out = out or output.Mtd(args.output_directory, start, stop)
     try:
+        p_start = time.time()
         r = Report(
             ceilometer,
             args.definition_filename,
@@ -102,6 +104,7 @@ def console_report():
             max_samples=args.max_samples
         )
         r.run()
+        logger.info("Finished in {} seconds".format(time.time() - p_start))
     finally:
         out.close()
 
