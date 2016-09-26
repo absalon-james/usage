@@ -132,7 +132,7 @@ class Meter:
         )
         for s_start, s_stop, s_query, s_count in schedule:
             logger.debug("{} - {} - {}".format(s_start, s_stop, s_count))
-        logger.info("Count of scheduled samples {}".format(schedule.count()))
+        logger.debug("Count of scheduled samples {}".format(schedule.count()))
 
         # Get samples
         samples = schedule.list()

@@ -134,14 +134,14 @@ class Scheduler(object):
         :rtype: Integer
         """
         # Get count of samples
-        logger.info(_count_to_cli(self.meter_name, q))
+        logger.debug(_count_to_cli(self.meter_name, q))
         p_start = time.time()
         stats = self.client.statistics.list(
             meter_name=self.meter_name,
             q=q,
             aggregates=[{'func': 'count'}]
         )
-        logger.info(
+        logger.debug(
             "Count finished in {} seconds.".format(time.time() - p_start)
         )
         if not stats:
@@ -205,7 +205,7 @@ class Scheduler(object):
                 "Performing query {} of {}".format(i + 1, total_queries)
             )
             _, _, q, limit = item
-            logger.info(_sample_list_to_cli(self.meter_name, q, limit))
+            logger.debug(_sample_list_to_cli(self.meter_name, q, limit))
             p_start = time.time()
             samples.extend(
                 self.client.samples.list(
@@ -214,7 +214,7 @@ class Scheduler(object):
                     limit=limit
                 )
             )
-            logger.info(
+            logger.debug(
                 "sample-list finished in {} seconds."
                 .format(time.time() - p_start)
             )

@@ -104,7 +104,7 @@ def console_report():
             max_samples=args.max_samples
         )
         r.run()
-        logger.info("Finished in {} seconds".format(time.time() - p_start))
+        logger.debug("Finished in {} seconds".format(time.time() - p_start))
     finally:
         out.close()
 
