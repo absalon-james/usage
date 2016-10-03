@@ -214,7 +214,9 @@ def hours(d, i, r):
     :param r: Meter reading
     :type r: usage.reading.Reading
     """
-    return seconds_to_hours(float((r.usage_stop - r.usage_start).seconds))
+    return seconds_to_hours(
+        float((r.usage_stop - r.usage_start).total_seconds())
+    )
 
 
 def instance_type(d, i, r):
