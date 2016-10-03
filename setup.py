@@ -8,6 +8,7 @@ entry_points = """
     usage-report=usage.console:console_report
     usage-summary=usage.console:console_summary
     [usage.conversions]
+    hours_to_days=usage.conversions.time_units:hours_to_days
     seconds_to_hours=usage.conversions.time_units:seconds_to_hours
     bytes_to_gigabytes=usage.conversions.disk_units:bytes_to_gigabytes
     megabytes_to_gigabytes=usage.conversions.disk_units:megabytes_to_gigabytes

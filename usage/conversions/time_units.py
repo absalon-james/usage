@@ -7,3 +7,14 @@ def seconds_to_hours(s):
     :rtype: Float
     """
     return float(s) / 3600
+
+
+def hours_to_days(h):
+    """Convert hours to days.
+
+    :param h: Number of hours
+    :type h: Float
+    :return: Number of days
+    :rtype: Float
+    """
+    return float(h) / 24
